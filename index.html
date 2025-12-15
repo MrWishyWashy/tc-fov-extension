@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trimble Connect – FOV Controller</title>
+
+  <style>
+    body {
+      font-family: system-ui, Segoe UI, Arial, sans-serif;
+      margin: 12px;
+    }
+    h3 { margin-top: 0; }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .val {
+      min-width: 50px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    button {
+      padding: 6px 10px;
+    }
+    .muted {
+      opacity: 0.7;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>Camera Field of View</h3>
+
+  <div class="row">
+    <input id="fov" type="range" min="10" max="120" step="1" value="60">
+    <div class="val"><span id="fovVal">60</span>°</div>
+  </div>
+
+  <div style="margin-top:10px;" class="row">
+    <button id="refresh">Read from view</button>
+  </div>
+
+  <div class="muted">
+    Adjusts the active 3D Viewer camera FOV (degrees)
+  </div>
+
+  <script src="https://components.connect.trimble.com/trimble-connect-workspace-api/index.js"></script>
+
+  <script>
+    let API;
+
+    const fovEl = document.getElementById("fov");
+    const fovValEl = document.getElementById("fovVal");
+    const refreshBtn = document.getElementById("refresh");
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    async function connect() {
+      API = await TrimbleConnectWorkspace.connect(
+        window.parent,
+        () => {}
+      );
+    }
+
+    async function readFov() {
+      const cam = await API.viewer.getCamera();
+      const fov = (cam && typeof cam.fieldOfView === "number") ? cam.fieldOfView : 60;
+      const v = clamp(Math.round(fov), 10, 120);
+      fovEl.value = v;
+      fovValEl.textContent = v;
+    }
+
+    async function writeFov(v) {
+      const fov = clamp(Number(v), 10, 120);
+      fovValEl.textContent = fov;
+
+      const cam = await API.viewer.getCamera();
+      cam.fieldOfView = fov;
+      await API.viewer.setCamera(cam, { animationTime: 150 });
+    }
+
+    (async () => {
+      await connect();
+      await readFov();
+
+      fovEl.addEventListener("input", () => writeFov(fovEl.value));
+      refreshBtn.addEventListener("click", readFov);
+    })();
+  </script>
+</body>
+</html>
