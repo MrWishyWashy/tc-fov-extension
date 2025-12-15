@@ -1,8 +1,8 @@
 {
   "title": "FOV Controller",
   "description": "Adjust camera field of view (FOV) in the 3D Viewer.",
-  "icon": "https://YOUR-USERNAME.github.io/tc-fov-extension/icon.png",
-  "infoUrl": "https://YOUR-USERNAME.github.io/tc-fov-extension/",
-  "url": "https://YOUR-USERNAME.github.io/tc-fov-extension/index.html",
+  "icon": "https://mrwishywashy.github.io/tc-fov-extension/icon.png",
+  "infoUrl": "https://mrwishywashy.github.io/tc-fov-extension/",
+  "url": "https://mrwishywashy.github.io/tc-fov-extension/index.html",
   "enabled": true
 }
